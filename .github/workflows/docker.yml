@@ -23,7 +23,7 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v4
 
-        - name: Configure AWS credentials
+        - name: Configure AWS credentials via OIDC
           uses: aws-actions/configure-aws-credentials@v4
           with:
             role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
@@ -40,7 +40,7 @@ jobs:
         - name: Scan image for vulnerabilities
           uses: aquasecurity/trivy-action@0.24.0
           with:
-            image-ref: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            image-ref: ${{ env.ECR_REGISTRY}}/${{ env.ECR_REPOSITORY}}:${{ env.IMAGE_TAG}}
             format: 'table'
             exit-code: '1'
 
