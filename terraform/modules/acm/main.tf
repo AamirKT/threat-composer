@@ -6,7 +6,7 @@ data "aws_route53_zone" "primary" {
 
 resource "aws_route53_record" "A-record" {
   zone_id = data.aws_route53_zone.primary.zone_id
-  name    = "${var.domain_name}"
+  name    = var.domain_name
   type    = "A"
 
   alias {
@@ -33,8 +33,8 @@ resource "aws_route53_record" "cert_validation_cname" {
 
 #ACM Certificate
 resource "aws_acm_certificate" "cert" {
-  domain_name               = var.domain_name
-  validation_method         = "DNS"
+  domain_name       = var.domain_name
+  validation_method = "DNS"
   lifecycle {
     create_before_destroy = false
   }

@@ -1,7 +1,7 @@
 variable "alb_name" {
   description = "The name of the Application Load Balancer"
   type        = string
-  default = "threatcomposer-alb"
+  default     = "threatcomposer-alb"
 }
 
 variable "certificate_arn" {

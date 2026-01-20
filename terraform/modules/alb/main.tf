@@ -7,11 +7,11 @@ resource "aws_lb" "threatcomposer_alb" {
 }
 
 resource "aws_lb_target_group" "threatcomposer_alb_tg" {
-  name     = "${var.alb_name}-tg"
-  port     = 3000
-  protocol = "HTTP"
+  name        = "${var.alb_name}-tg"
+  port        = 3000
+  protocol    = "HTTP"
   target_type = "ip"
-  vpc_id   = var.vpc_id
+  vpc_id      = var.vpc_id
 
   health_check {
     path                = "/health.json"
@@ -30,7 +30,7 @@ resource "aws_lb_listener" "threatcomposer_alb_listener" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "redirect"
+    type = "redirect"
 
     redirect {
       port        = "443"
