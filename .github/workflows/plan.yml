@@ -1,0 +1,70 @@
+name: terraform plan
+
+on:
+    push:
+        branches:
+        - main
+        paths:
+          - "terraform/**"
+
+    workflow_dispatch:
+
+env:
+    AWS_REGION: eu-west-2
+   
+jobs:
+    terraform-plan:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Configure AWS credentials via OIDC
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            role-to-assume: ${{ secrets.AWS_ROLE_TERRAFORM_PLAN }}
+            aws-region: ${{ env.AWS_REGION }}
+            role-session-name: terraform-plan
+
+        - name: Setup TFLint
+          uses: terraform-linters/setup-tflint@v3
+          with:
+            tflint_version: latest
+
+        - name: Init TFLint
+          run: tflint --init
+
+        - name: Run TFLint
+          run: tflint
+
+        - name: Setup Checkov
+          uses: bridgecrewio/checkov-action@master
+          with:
+              directory: .
+              framework: terraform
+              skip_check: CKV_AWS_19
+              quiet: false
+
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v2
+          with:
+            terraform_version: 1.7.6
+
+        - name: Terraform Init
+          run: terraform init
+
+        - name: Terraform format
+          run: terraform fmt -check
+
+        - name: Terraform Validate
+          run: terraform validate
+
+        - name: Terraform Plan
+          run: terraform plan -out=tfplan -input=false
+
+        - name: Show Terraform Plan
+          run: terraform show -no-color tfplan
