@@ -15,6 +15,9 @@ env:
 jobs:
     terraform-plan:
         runs-on: ubuntu-latest
+        defaults:
+          run:
+            working-directory: terraform/
         permissions:
             contents: read
             id-token: write
@@ -65,7 +68,7 @@ jobs:
           run: terraform validate
 
         - name: Terraform Plan
-          run: terraform plan -out=tfplan -input=false
+          run: terraform plan -out=tfplan
 
         - name: Show Terraform Plan
           run: terraform show -no-color tfplan
