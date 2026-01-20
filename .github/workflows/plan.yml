@@ -71,6 +71,8 @@ jobs:
           run: terraform plan -input=false -lock-timeout=2m -out=tfplan
           env:
             TF_VAR_container_image: ${{ vars.ECR_REGISTRY }}/${{ vars.ECR_REPOSITORY }}:${{ github.sha }}
+            TF_VAR_route53_zone_id: ${{ vars.ROUTE53_ZONE_ID}}
+            TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
 
         - name: Show Terraform Plan
           run: terraform show -no-color tfplan
