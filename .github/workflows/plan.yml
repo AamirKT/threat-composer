@@ -68,7 +68,9 @@ jobs:
           run: terraform validate
 
         - name: Terraform Plan
-          run: terraform plan -out=tfplan
+          run: terraform plan -input=false -out=tfplan
+          env:
+            TF_VAR_container_image: ${{ vars.ECR_REGISTRY }}/${{ vars.ECR_REPOSITORY }}:${{ github.sha }}
 
         - name: Show Terraform Plan
           run: terraform show -no-color tfplan
