@@ -49,21 +49,3 @@ jobs:
 
         - name: Post-deploy health check (ECS behind ALB)
           run: curl -f https://aamir-ecs.com/health.json
-          
-
-
-          
-
-            
-
-
-    
-        
-
-    
-
-    
-
-
-
-
