@@ -38,17 +38,11 @@ jobs:
           with:
             terraform_version: 1.14.3
             
-        - name: Download plan artifact
-          uses: actions/download-artifact@v4
-          with:
-            name: terraform-plan
-            path: terraform/
-
         - name: Terraform Init
           run: terraform init
 
         - name: Terraform apply
-          run: terraform apply "tfplan"
+          run: terraform apply -auto-approve
 
         - name: Post-deploy health check
           run: curl -f https://aamir-ecs.com/health.json
