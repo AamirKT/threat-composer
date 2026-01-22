@@ -48,4 +48,34 @@ jobs:
           run: terraform apply -auto-approve
 
         - name: Post-deploy health check (ECS behind ALB)
-          run: curl -f https://aamir-ecs.com/health.json
+          shell: bash
+          run: |
+            set -e
+
+            echo "Waiting for ALB + ECS to become healthy..."
+
+            if curl -fs \
+              --retry 30 \
+              --retry-delay 10 \
+              --retry-all-errors \
+              https://aamir-ecs.com/health.json; then
+              echo "Service is healthy"
+            else
+              echo "Service failed ALB health checks"
+              exit 1
+            fi
+        
+
+            
+
+
+    
+        
+
+    
+
+    
+
+
+
+
