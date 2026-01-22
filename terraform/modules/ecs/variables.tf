@@ -35,3 +35,74 @@ variable "alb_load_balancer_arn" {
   type        = string
 }
 
+variable "family_name" {
+  description = "The family name for the ECS task definition"
+  type        = string
+  default     = "threatcomposer-ecs-task"
+}
+
+variable "network_mode" {
+  description = "The network mode for the ECS task definition"
+  type        = string
+  default     = "awsvpc"
+}
+
+variable "requires_compatibilities" {
+  description = "The launch type required by the ECS task definition"
+  type        = list(string)
+  default     = ["FARGATE"]
+}
+
+variable "cpu" {
+  description = "The CPU units for the ECS task"
+  type        = string
+  default     = "512"
+}
+
+variable "memory" {
+  description = "The memory for the ECS task"
+  type        = string
+  default     = "1024"
+}
+
+variable "desired_count" {
+  description = "The desired number of ECS tasks to run"
+  type        = number
+  default     = 2
+}
+
+variable "container_port" {
+  description = "The port on which the container listens"
+  type        = number
+  default     = 3000
+}
+
+variable "ecs_service_name" {
+  description = "The name of the ECS service"
+  type        = string
+  default     = "threatcomposer-ecs-service"
+}
+
+variable "container_name" {
+  description = "The name of the container in the ECS task"
+  type        = string
+  default     = "threatcomposer-container"
+}
+
+variable "launch_type" {
+  description = "The launch type for the ECS service"
+  type        = string
+  default     = "FARGATE"
+}
+
+variable "aws_iam_role_name" {
+  description = "The name of the IAM role for ECS task execution"
+  type        = string
+  default     = "threatcomposer-ecs-task-execution-role"
+}
+
+variable "policy_arn" {
+  description = "The ARN of the IAM policy to attach to the ECS task execution role"
+  type        = string
+  default     = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
