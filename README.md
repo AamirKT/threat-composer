@@ -40,7 +40,58 @@ This project showcases the deployment of a React-based threat modelling applicat
 
 ###  Containers & Application
 - **Docker** – Containerised application packaging  
-- **ECS Task Definitions** – Declarative runtime configuration for containers  
+- **ECS Task Definitions** – Declarative runtime configuration for containers
+
+## Project Structure
+```
+threat-composer
+└── .github/workflows/
+    ├── apply.yml
+    ├── destroy.yml
+    ├── docker.yml
+    └── plan.yml
+├── LICENSE.txt
+├── README.md
+├── app/
+│   ├── Dockerfile
+│   ├── .gitignore
+│   │
+└── terraform/
+    ├── bootstrap/
+    │   ├── main.tf
+    │   ├── outputs.tf
+    │   ├── provider.tf
+    │  
+    ├── main.tf
+    ├── modules/
+    │   ├── acm/
+    │   │   ├── main.tf
+    │   │   ├── outputs.tf
+    │   │   └── variables.tf
+    │   ├── alb/
+    │   │   ├── main.tf
+    │   │   ├── outputs.tf
+    │   │   └── variables.tf
+    │   ├── ecr/
+    │   │   ├── main.tf
+    │   │   ├── outputs.tf
+    │   │   └── variables.tf
+    │   ├── ecs/
+    │   │   ├── main.tf
+    │   │   ├── outputs.tf
+    │   │   └── variables.tf
+    │   ├── sg/
+    │   │   ├── main.tf
+    │   │   ├── outputs.tf
+    │   │   └── variables.tf
+    │   └── vpc/
+    │       ├── main.tf
+    │       ├── outputs.tf
+    │       └── variables.tf
+    ├── provider.tf
+    ├── terraform.tfvars
+    └── variables.tf
+``` 
 
 ## Running the Application Locally
 
@@ -68,11 +119,9 @@ docker build -t threatapp:local .
 docker run -d -p 3000:3000 threat:local 
 # Application runs at http://localhost:3000
 ```
-### Local health check
-```bash
-curl http://localhost:3000/health.json
-```
-Should return 'status: ok'
+### Local Health Check
+
+![Local Health Check Passed](https://github.com/AamirKT/threat-composer/blob/main/images/local%20health%20check.png?raw=true)
 
 ## Docker Build Performance
 
@@ -83,10 +132,14 @@ This project compares **single-stage** and **multi-stage Docker builds** for the
 | **Single-stage** | 4.34 GB    | 872 MB     | 8 min 54s | Local build; node:20-latest base image used; all dependencies and build artifacts remain in final image |
 | **Multi-stage**  | 299 MB    | 69 MB      | 4 min 35s | Production-ready build; lightweight node:20-alpine image used; unnecessary build tools excluded ||
 
-**Multi-stage builds offer significant improvements:**
-- **Lower disk usage by 93%**  
-- **Shrink image size by 92%**  
-- **Accelerate deployment with 49% faster build times**
+**Verified Docker Images**
+
+![Docker image verification](https://github.com/AamirKT/threat-composer/blob/main/images/docker%20image%20comparison%20data.png?raw=true)
+
+**Multi-stage builds offered significant improvements:**
+- **Lowered disk usage by 93%**  
+- **Shrunk image size by 92%**  
+- **Accelerated deployment with 49% faster build time**
 
 ## Project Structure
 ```
@@ -145,23 +198,34 @@ This project features a **fully automated, secure CI/CD pipeline** using GitHub 
 ### Workflow Overview
 
 1. **Docker Build & Push (`docker.yml`)**
-   - Builds Docker images for the application    
+
+![docker.yml](https://github.com/AamirKT/threat-composer/blob/main/images/docker%20workflow%20success.png?raw=true)
+
+   - Builds Docker images for the application
+   - Uses **trivy** to scan image for security vulnerabilities  
    - Pushes images to **Amazon ECR**  
-   - Provides **real-time build status** in GitHub Actions  
 
 2. **Terraform Plan (`plan.yml`)**
+
+![plan.yml](https://github.com/AamirKT/threat-composer/blob/main/images/plan%20workflow%20success.png?raw=true)
+
    - Executes `terraform plan` to preview infrastructure changes  
-   - Ensures all IaC changes are **safe and reviewable** before applying  
+   - Runs **TFLint**, to catch potential issues and enforce Terraform best practices
    - Integrates **Checkov** to scan Terraform code for misconfigurations
-   - Runs **TFLint** to catch potential issues and enforce Terraform best practices
-
-
+   - Runs `terraform fmt` and `terraform validate` to catch errors and keep code consistent.
+      
 3. **Terraform Apply (`apply.yml`)**
+
+![apply.yml](https://github.com/AamirKT/threat-composer/blob/main/images/apply%20workflow%20success.png?raw=true)
+
    - Applies approved Terraform changes to provision/update AWS infrastructure  
-   - Deploys updated containers to **AWS ECS Fargate**   
-   - Runs **Trivy scans** to check container images before deployment  
+   - Deploys updated containers to **AWS ECS Fargate**
+   - Executes **Post-Deploy Health Check** that fails the pipeline if the health check does not pass
 
 4. **Terraform Destroy (`destroy.yml`)**
+
+![destroy.yml](https://github.com/AamirKT/threat-composer/blob/main/images/destroy%20workflow%20success.png?raw=true)
+
    - Tears down infrastructure safely when required  
    - Ensures **clean removal** of AWS resources without leaving orphaned services  
 
@@ -174,18 +238,6 @@ This project features a **fully automated, secure CI/CD pipeline** using GitHub 
 - **Secrets management** using AWS Secrets Manager to avoid hard-coded secrets  
 - **Network isolation** via VPC design with public and private subnets and controlled ingress through an Application Load Balancer  
 - **Auditability and traceability** through GitOps workflows, where all infrastructure and deployment changes are version-controlled in Git
-
-  ## Data Points
-
-- **Average Docker build time:** ~X min  
-- **Number of successful deployments:** X  
-- **Terraform Plan Checks Passed:** 100%  
-- **Container vulnerabilities detected/fixed (Trivy):** X  
-- **Terraform misconfigurations detected/fixed (Checkov):** X  
-- **ECS service auto-scaling events handled automatically:** X  
-- **Infrastructure drift prevented** using GitOps workflow  
-
-*(Replace `X` with actual numbers from your project)*
 
 ---
 
