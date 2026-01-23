@@ -78,16 +78,15 @@ Should return 'status: ok'
 
 This project compares **single-stage** and **multi-stage Docker builds** for the application to demonstrate container optimisation in a production deployment.
 
-| Build Type           | Image Size | Build Time | Notes |
-|---------------------|------------|------------|-------|
-| **Single-stage**     | 800 MB     | 3 min 45 s | Simple build; includes development dependencies, larger image size |
-| **Multi-stage**      | 220 MB     | 2 min 10 s | Production-ready build; development dependencies removed, significantly smaller and faster |
+| Build Type      | Disk Usage | Image Size | Build Time | Notes |
+|-----------------|-----------|------------|------------|-------|
+| **Single-stage** | 4.34 GB    | 872 MB     | 8 min 54s | Local build; node:20-latest base image used; all dependencies and build artifacts remain in final image |
+| **Multi-stage**  | 299 MB    | 69 MB      | 4 min 35s | Production-ready build; lightweight node:20-alpine image used; unnecessary build tools excluded ||
 
-**Key Takeaways:**  
-- Multi-stage Docker builds drastically **reduce image size** (~3.6× smaller)  
-- Multi-stage builds **improve deployment speed** and **resource efficiency** in ECS Fargate  
-- Shows understanding of **best practices for containerization in production**
-
+**Multi-stage builds offer significant improvements:**
+- **Lower disk usage by 93%**  
+- **Shrink image size by 92%**  
+- **Accelerate deployment with 49% faster build times**
 
 ## Project Structure
 ```
