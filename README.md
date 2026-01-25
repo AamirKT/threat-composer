@@ -6,11 +6,17 @@ A production-grade containerised application deployment on AWS ECS Fargate, demo
 
 This project showcases the deployment of a React-based threat modelling application to AWS using modern DevOps practices. The infrastructure is fully automated, secure, and follows the principle of least privilege throughout.
 
+---
+
+## Architecture
+
+![Architecture Diagram](https://github.com/AamirKT/threat-composer/blob/main/images/diagram.drawio.png?raw=true)
+
 ### What I Built:
 
 - **Fully automated CI/CD pipeline** using GitHub Actions with OIDC authentication (zero static credentials)
 
-- **Production-grade ECS Fargate deployment** with task definitions, services, and autoscaling
+- **Production-grade ECS Fargate deployment** with task definitions and services
 
 - **Infrastructure as Code (IaC)** using Terraform to provision VPC, IAM, ECS, ALB, and supporting AWS resources
 
@@ -37,11 +43,10 @@ This project showcases the deployment of a React-based threat modelling applicat
 - **Checkov** – Policy-as-code and static security analysis for Terraform IaC
 - **TFLint** – Linter for Terraform code to enforce best practices and detect potential issues early  
 
-
 ###  Containers & Application
 - **Docker** – Containerised application packaging  
 - **ECS Task Definitions** – Declarative runtime configuration for containers
-
+---
 ## Project Structure
 ```
 threat-composer
@@ -92,7 +97,7 @@ threat-composer
     ├── terraform.tfvars
     └── variables.tf
 ``` 
-
+---
 ## Running the Application Locally
 
 ### Prerequisites
@@ -123,6 +128,8 @@ docker run -d -p 3000:3000 threat:local
 
 ![Local Health Check Passed](https://github.com/AamirKT/threat-composer/blob/main/images/local%20health%20check.png?raw=true)
 
+---
+
 ## Docker Build Performance
 
 This project compares **single-stage** and **multi-stage Docker builds** for the application to demonstrate container optimisation in a production deployment.
@@ -132,65 +139,49 @@ This project compares **single-stage** and **multi-stage Docker builds** for the
 | **Single-stage** | 4.34 GB    | 872 MB     | 8 min 54s | Local build; node:20-latest base image used; all dependencies and build artifacts remain in final image |
 | **Multi-stage**  | 299 MB    | 69 MB      | 4 min 35s | Production-ready build; lightweight node:20-alpine image used; unnecessary build tools excluded ||
 
-**Verified Docker Images**
-
-![Docker image verification](https://github.com/AamirKT/threat-composer/blob/main/images/docker%20image%20comparison%20data.png?raw=true)
-
 **Multi-stage builds offered significant improvements:**
 - **Lowered disk usage by 93%**  
 - **Shrunk image size by 92%**  
 - **Accelerated deployment with 49% faster build time**
 
-## Project Structure
+**Verified Docker Images:**
+
+![Docker image verification](https://github.com/AamirKT/threat-composer/blob/main/images/docker%20image%20comparison%20data.png?raw=true)
+
+---
+
+##  Container Registry (ECR)
+
+Docker images are stored in Amazon Elastic Container Registry, providing secure, scalable image storage with IAM-based authentication.
+
+![ECR image ](https://github.com/AamirKT/threat-composer/blob/main/images/ecr-image.png?raw=true)
+
+---
+
+## TLS Certificate (ACM)
+
+SSL/TLS certificate managed by AWS Certificate Manager with DNS validation via Route53. The certificate covers `aamir-ecs.com` and is automatically renewed by AWS.
+
+![ACM Certificate](https://github.com/AamirKT/threat-composer/blob/main/images/acm%20certificate%20confirmation.png?raw=true)
+
+---
+
+## Production Deployment
+
+The application is deployed to ECS Fargate behind an Application Load Balancer with TLS termination.
+
+### Live Endpoint
 ```
-threat-composer
-└── .github/workflows/
-    ├── apply.yml
-    ├── destroy.yml
-    ├── docker.yml
-    └── plan.yml
-├── LICENSE.txt
-├── README.md
-├── app/
-│   ├── Dockerfile
-│   ├── .gitignore
-│   │
-└── terraform/
-    ├── bootstrap/
-    │   ├── main.tf
-    │   ├── outputs.tf
-    │   ├── provider.tf
-    │  
-    ├── main.tf
-    ├── modules/
-    │   ├── acm/
-    │   │   ├── main.tf
-    │   │   ├── outputs.tf
-    │   │   └── variables.tf
-    │   ├── alb/
-    │   │   ├── main.tf
-    │   │   ├── outputs.tf
-    │   │   └── variables.tf
-    │   ├── ecr/
-    │   │   ├── main.tf
-    │   │   ├── outputs.tf
-    │   │   └── variables.tf
-    │   ├── ecs/
-    │   │   ├── main.tf
-    │   │   ├── outputs.tf
-    │   │   └── variables.tf
-    │   ├── sg/
-    │   │   ├── main.tf
-    │   │   ├── outputs.tf
-    │   │   └── variables.tf
-    │   └── vpc/
-    │       ├── main.tf
-    │       ├── outputs.tf
-    │       └── variables.tf
-    ├── provider.tf
-    ├── terraform.tfvars
-    └── variables.tf
+https://aamir-ecs.com
+https://aamir-ecs.com/health.json
 ```
+### Verified Production Deployment
+
+Application accessible via HTTPS on custom domain:
+
+![Application Running on HTTPS](https://github.com/AamirKT/threat-composer/blob/main/images/threat-composer%20web%20page.png?raw=true)
+
+---
 ## CI/CD Pipeline (GitHub Actions)
 
 This project features a **fully automated, secure CI/CD pipeline** using GitHub Actions with **OIDC authentication** and **GitOps principles**. Each workflow is designed to manage specific stages of application lifecycle, from building containers to provisioning and destroying infrastructure on AWS ECS Fargate.
@@ -227,56 +218,86 @@ This project features a **fully automated, secure CI/CD pipeline** using GitHub 
 ![destroy.yml](https://github.com/AamirKT/threat-composer/blob/main/images/destroy%20workflow%20success.png?raw=true)
 
    - Tears down infrastructure safely when required  
-   - Ensures **clean removal** of AWS resources without leaving orphaned services  
+   - Ensures **clean removal** of AWS resources without leaving orphaned services
+
+---
 
 ## Security & Compliance
 
-- **OIDC-based authentication** between GitHub Actions and AWS, eliminating the use of long-lived static credentials  
-- **Least-privilege IAM roles and policies** for CI/CD pipelines, ECS tasks, and supporting AWS services  
-- **Infrastructure security scanning** using **Checkov** to detect misconfigurations and enforce policy-as-code on Terraform resources  
-- **Container vulnerability scanning** with **Trivy** to identify known CVEs in container images and filesystems before deployment  
-- **Secrets management** using AWS Secrets Manager to avoid hard-coded secrets  
-- **Network isolation** via VPC design with public and private subnets and controlled ingress through an Application Load Balancer  
-- **Auditability and traceability** through GitOps workflows, where all infrastructure and deployment changes are version-controlled in Git
+Security and compliance are built into every stage of the CI/CD and infrastructure lifecycle:
+
+- **OIDC-based authentication** between GitHub Actions and AWS, eliminating long-lived static credentials and reducing credential exposure risk.
+- **Least-privilege IAM design**, with tightly scoped roles and policies for CI/CD pipelines, ECS tasks, and supporting AWS services.
+- **Infrastructure security scanning** using **Checkov** to detect misconfigurations and enforce policy-as-code for Terraform-managed resources.
+- **Container vulnerability scanning** with **Trivy** to identify known CVEs in container images and filesystems before deployment.
+- **Secure secrets management** using **GitHub secrets**, avoiding hard-coded credentials in code or pipelines.
+- **Network isolation and access control** through VPC architecture with public and private subnets, controlled ingress via an Application Load Balancer.
+- **Auditability and traceability** enabled by GitOps workflows, ensuring all infrastructure and deployment changes are version-controlled and auditable in Git.
 
 ---
 
 ## Challenges Encountered & Solutions
 
-- **Challenge:** Ensuring secure CI/CD without using long-lived AWS credentials  
-  **Solution:** Implemented **OIDC authentication** in GitHub Actions to authenticate dynamically with AWS, eliminating static secrets.
+### 1. IAM Permission Issues During Terraform Apply
+**Challenge:**  
+Terraform `plan` and `apply` failed with multiple `403 AccessDenied` errors across EC2, ECS, IAM, ECR, Route 53, and ACM.
 
-- **Challenge:** Detecting misconfigurations in Terraform before applying changes  
-  **Solution:** Integrated **Checkov** and **TFLint** into the CI pipeline to catch security and best-practice issues during `terraform plan`.
+**Solution:**  
+The GitHub Actions IAM role was updated with the required permissions. After fixing IAM policies, both were run successfully.
 
-- **Challenge:** Preventing vulnerabilities in container images  
-  **Solution:** Added **Trivy** scans in the pipeline to identify and remediate CVEs before deployment.
+---
 
-- **Challenge:** Managing infrastructure drift and environment consistency  
-  **Solution:** Adopted **GitOps workflow**, making Git the single source of truth for both infrastructure and application deployments.
+### 2. Terraform State Locked in S3 After Failed Apply
+**Challenge:**  
+A failed `terraform apply` left the remote S3 state file locked, preventing subsequent runs.
 
-## Lessons Learned & Improvements
+**Solution:**  
+The state lock was manually released using `terraform force-unlock`, after which `terraform apply` could run normally again.
 
-- Learned to implement **GitOps workflow with secure OIDC authentication** for CI/CD pipelines.  
-- Gained hands-on experience with **Terraform modularization** and deploying production-grade **AWS ECS Fargate workloads**.  
-- Improved **security posture** by integrating **Trivy** and **Checkov** into CI/CD pipelines.  
-- Learned best practices for **least-privilege IAM roles** and network isolation in AWS.
+---
+
+### 3. ECS Tasks Stuck in `PENDING` / Image Pull Failures
+**Challenge:**  
+ECS tasks failed to start due to missing container images in ECR (`CannotPullContainerError`).
+
+**Solution:**  
+Ensured the Docker image was built and pushed to ECR **before** updating the ECS service, using the GitHub commit SHA consistently for tagging.
+
+---
+
+### 4. ALB Health Checks Failing During Deployment
+**Challenge:**  
+The application returned `503` errors immediately after deployment, causing the CI pipeline to fail.
+
+**Solution:**  
+Added retries to the post-deploy health check, allowing ECS tasks time to register as healthy behind the ALB.
+
+---
+
+### Key Takeaways:
+
+- Terraform requires both read and write IAM permissions to manage infrastructure safely.
+- Failed Terraform applies can leave remote state locked, requiring manual recovery.
+- ECS deployments depend on correct image tagging and build order in CI/CD pipelines.
+- ALB-backed ECS services need retry-based health checks to avoid false failures.
+- Partial infrastructure creation is possible even when Terraform exits with errors.
+- Infrastructure as Code enables fast recovery once foundational issues are fixed.
+
+---
   
-- **Areas to improve:**
-  - Implement **automated rollback strategies** for ECS deployments to minimize downtime on failed releases.  
+### Future improvements:
+
+  - Include ECR repository provisioning in the Terraform bootstrap module before the main deployment.
+  - Introduce environment separation (dev/stage/prod) using Terraform workspaces.
   - Enhance **monitoring and alerting**, potentially integrating CloudWatch Alarms or Prometheus/Grafana dashboards.  
-  - Expand **integration testing** for containers before production deployment.  
-  - Consider **multi-environment deployments** (dev/staging/prod) with fully automated promotion pipelines.  
+  - Expand **integration testing** for containers before production deployment.
 
+   ---
 
+## Author
 
+**aamirkt**
 
-
-
-
-
-
-
-
+This project was completed as part of my DevOps engineering portfolio, demonstrating production-grade infrastructure automation and CI/CD practices.
 
  
