@@ -40,3 +40,8 @@ jobs:
 
         - name: Terraform destroy
           run: terraform destroy -auto-approve
+
+        - name: Notify success
+          if: success()
+          run: echo Success! Your infastructure has been destroyed successfully!
+          

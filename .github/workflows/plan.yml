@@ -76,3 +76,8 @@ jobs:
 
         - name: Show Terraform Plan
           run: terraform show -no-color tfplan
+
+        - name: Notify success
+          if: success()
+          run: echo Success! Your terraform plan has been created successfully!
+          

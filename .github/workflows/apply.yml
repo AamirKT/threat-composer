@@ -65,6 +65,9 @@ jobs:
               exit 1
             fi
         
+        - name: Notify success
+          if: success()
+          run: echo Success! Your infastructure has been applied successfully!
 
             
 
