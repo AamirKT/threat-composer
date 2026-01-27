@@ -8,7 +8,7 @@ This project showcases the deployment of a React-based threat modelling applicat
 
 ## Architecture
 
-![Architecture Diagram](https://github.com/AamirKT/threat-composer/blob/main/images/threat-composer-architecture.drawio.png?raw=true)
+![Architecture Diagram](https://github.com/AamirKT/threat-composer/blob/main/images/threatcomposer-architecture.drawio.png?raw=true)
 
 ## Demo
 
