@@ -305,8 +305,9 @@ Added retries to the post-deploy health check, allowing ECS tasks time to regist
 
 ## Author
 
-**aamirkt**
+**Aamir Tamuri**
 
-This project was completed as part of my DevOps engineering portfolio, demonstrating production-grade infrastructure automation and CI/CD practices.
+[LinkedIn](https://www.linkedin.com/in/aamir-tamuri-491244349/) | [GitHub](https://github.com/AamirKT)
 
- 
+DevOps engineer building production-grade cloud infrastructure and CI/CD pipelines. This project demonstrates automated, secure, and scalable deployment of cloud-native applications.
+
