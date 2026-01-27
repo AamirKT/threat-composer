@@ -1,4 +1,4 @@
-# End to End Production Grade Deployment on AWS ECS Fargate - [Threat-composer]
+# End to End Production Grade Deployment on AWS ECS Fargate (Threat composer)
  ---
 A production-grade containerised application deployment on AWS ECS Fargate, demonstrating Infrastructure as Code (IaC) best practices, GitOps workflows, and secure CI/CD automation.
 
@@ -6,11 +6,22 @@ A production-grade containerised application deployment on AWS ECS Fargate, demo
 
 This project showcases the deployment of a React-based threat modelling application to AWS using modern DevOps practices. The infrastructure is fully automated, secure, and follows the principle of least privilege throughout.
 
----
-
 ## Architecture
 
 ![Architecture Diagram](https://github.com/AamirKT/threat-composer/blob/main/images/diagram.drawio.png?raw=true)
+
+## Demo
+
+https://github.com/user-attachments/assets/b91392e8-3f26-475d-b7ce-82c20e4268ec 
+
+---
+## What is Threat Composer?
+
+Threat Composer is a web-based threat modelling application that helps teams design, visualise, and manage security threats across modern systems.
+
+It enables engineers and security practitioners to identify threats, track mitigations, and document assumptions early in the design process using an interactive, cloud-native platform.
+
+---
 
 ### What I Built:
 
@@ -137,14 +148,12 @@ This project compares **single-stage** and **multi-stage Docker builds** for the
 | Build Type      | Disk Usage | Image Size | Build Time | Notes |
 |-----------------|-----------|------------|------------|-------|
 | **Single-stage** | 4.34 GB    | 872 MB     | 8 min 54s | Local build; node:20-latest base image used; all dependencies and build artifacts remain in final image |
-| **Multi-stage**  | 299 MB    | 69 MB      | 4 min 35s | Production-ready build; lightweight node:20-alpine image used; unnecessary build tools excluded ||
+| **Multi-stage**  | 299 MB    | 69 MB      | 3 min 53s | Production-ready build; lightweight node:20-alpine image used; unnecessary build tools excluded ||
 
 **Multi-stage builds offered significant improvements:**
 - **Lowered disk usage by 93%**  
 - **Shrunk image size by 92%**  
-- **Accelerated deployment with 49% faster build time**
-
-**Verified Docker Images:**
+- **Accelerated deployment with 56% faster build time**
 
 ![Docker image verification](https://github.com/AamirKT/threat-composer/blob/main/images/docker%20image%20comparison%20data.png?raw=true)
 
