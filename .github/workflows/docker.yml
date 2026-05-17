@@ -1,11 +1,5 @@
 name: Build and push Docker image to ECR
-on:
-    push:
-        branches:
-        - main
-        paths:
-          - "app/Dockerfile"
-          
+on:         
     workflow_dispatch:
 
 env:
@@ -41,15 +35,11 @@ jobs:
           run: docker build -f ./app/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./app
 
         - name: Scan image for vulnerabilities
-          uses: aquasecurity/trivy-action@0.24.0
+          uses: aquasecurity/trivy-action@v0.35.0
           with:
-            image-ref: ${{ env.ECR_REGISTRY}}/${{ env.ECR_REPOSITORY}}:${{ env.IMAGE_TAG}}
+            image-ref: ${{ env.ECR_REGISTRY}}/${{ env.ECR_REPOSITORY}}:${{ env.IMAGE_TAG }}
             format: 'table'
             exit-code: '0'
 
         - name: Push docker image to ECR
           run: docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
-        - name: Notify success
-          if: success()
-          run: echo Success! Docker image has been built and pushed to ECR successfully!
