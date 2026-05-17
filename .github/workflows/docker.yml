@@ -6,15 +6,13 @@ env:
     AWS_REGION: eu-west-2
     ECR_REGISTRY: ${{ vars.ECR_REGISTRY }}
     ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
-    IMAGE_TAG: ${{ github.sha }}
-
+    IMAGE_NAME: threat-composer
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
         permissions:
             contents: read
             id-token: write
-
 
         steps:
         - name: Checkout code
@@ -28,18 +26,38 @@ jobs:
             role-session-name: github-ecr-ecs
 
         - name: Login to Amazon ECR
-          run: |
-            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin $ECR_REGISTRY
+          uses: aws-actions/amazon-ecr-login@v2
 
-        - name: Build docker image
-          run: docker build -f ./app/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./app
+        - name: Docker metadata
+          id: meta
+          uses: docker/metadata-action@v5
+          with:
+            images: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}
+            tags: |
+              type=sha,prefix=git-
+              type=ref,event=tag
+           
+        - name: Setup Docker Buildx
+          uses: docker/setup-buildx-action@v3
+
+        - name: Build and push Docker image
+          uses: docker/build-push-action@v6
+          with:
+            context: .
+            file: ./Dockerfile
+            push: true
+            tags: ${{ steps.meta.outputs.tags }}
+            labels: ${{ steps.meta.outputs.labels }}
+            cache-from: type=gha
+            cache-to: type=gha,mode=max
+            platforms: linux/amd64,linux/arm64
 
         - name: Scan image for vulnerabilities
           uses: aquasecurity/trivy-action@v0.35.0
           with:
-            image-ref: ${{ env.ECR_REGISTRY}}/${{ env.ECR_REPOSITORY}}:${{ env.IMAGE_TAG }}
+            image-ref: ${{ env.ECR_REGISTRY}}/${{ env.ECR_REPOSITORY}}:git-${{ github.sha }}
             format: 'table'
-            exit-code: '0'
+            exit-code: '1'
+            severity: 'CRITICAL'
 
-        - name: Push docker image to ECR
-          run: docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
