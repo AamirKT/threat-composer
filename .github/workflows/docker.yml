@@ -1,7 +1,13 @@
 name: Build and push Docker image to ECR
-on:         
-    workflow_dispatch:
+on:
+  push:
+    branches:
+      - main
+    paths:
+        - 'app/Dockerfile'
 
+  workflow_dispatch:
+    
 env:
     AWS_REGION: eu-west-2
     ECR_REGISTRY: ${{ vars.ECR_REGISTRY }}
