@@ -55,13 +55,13 @@ jobs:
             image-ref: local-image:scan
             format: 'table'
             exit-code: '1'
-            severity: 'CRITICAL'
+            severity: 'CRITICAL,HIGH'
 
         - name: Tag and Push Docker image
           run: |
             docker tag local-image:scan ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ steps.tag.outputs.IMAGE_TAG }}
             docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ steps.tag.outputs.IMAGE_TAG }}
-            
+
 
 
 
