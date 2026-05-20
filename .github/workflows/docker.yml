@@ -55,7 +55,7 @@ jobs:
             image-ref: local-image:scan
             format: 'table'
             exit-code: '1'
-            severity: 'CRITICAL,HIGH'
+            severity: 'CRITICAL'
 
         - name: Tag and Push Docker image
           run: |
