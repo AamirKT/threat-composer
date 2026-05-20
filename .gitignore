@@ -45,6 +45,8 @@ jspm_packages/
 # .tfstate files
 *.tfstate
 *.tfstate.*
+backup.tfstate
+*.backup.tfstate
 
 # Crash log files
 crash.log
