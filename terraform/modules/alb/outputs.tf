@@ -3,7 +3,6 @@ output "alb_dns_name" {
   value       = aws_lb.threatcomposer_alb.dns_name
 }
 
-
 output "alb_listener_arn" {
   description = "The ARN of the ALB HTTP listener"
   value       = aws_lb_listener.threatcomposer_alb_listener.arn

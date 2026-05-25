@@ -5,9 +5,9 @@ resource "aws_lb" "threatcomposer_alb" {
   security_groups    = [var.alb_security_group_id]
   subnets            = var.public_subnet_ids
 
-enable_deletion_protection = false
+  enable_deletion_protection = false
 
-drop_invalid_header_fields = true
+  drop_invalid_header_fields = true
 
   tags = {
     Name = var.alb_name
@@ -22,12 +22,12 @@ resource "aws_lb_target_group" "threatcomposer_alb_tg" {
   vpc_id      = var.vpc_id
 
   health_check {
-    path                = "/health.json"
+    path                = "/health"
     protocol            = "HTTP"
-    matcher             = "200-399"
+    matcher             = "200"
     interval            = "30"
     timeout             = "5"
-    healthy_threshold   = "3"
+    healthy_threshold   = "2"
     unhealthy_threshold = "3"
   }
 }

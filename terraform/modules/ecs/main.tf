@@ -23,19 +23,30 @@ resource "aws_ecs_task_definition" "threatcomposer_task_definition" {
         {
           containerPort = var.container_port
           protocol      = "tcp"
+
         }
       ]
-
     }
     ]
   )
 }
 
 resource "aws_ecs_service" "threatcomposer_ecs_service" {
-  name            = var.ecs_service_name
-  cluster         = aws_ecs_cluster.threatcomposer_ecs_cluster.id
-  task_definition = aws_ecs_task_definition.threatcomposer_task_definition.arn
-  desired_count   = var.desired_count
+  name                               = var.ecs_service_name
+  cluster                            = aws_ecs_cluster.threatcomposer_ecs_cluster.id
+  task_definition                    = aws_ecs_task_definition.threatcomposer_task_definition.arn
+  desired_count                      = var.desired_count
+  deployment_maximum_percent         = var.deployment_maximum_percent
+  deployment_minimum_healthy_percent = var.deployment_minimum_healthy_percent
+
+  lifecycle {
+    ignore_changes = [task_definition, desired_count, deployment_maximum_percent, deployment_minimum_healthy_percent]
+  }
+
+  deployment_circuit_breaker {
+    enable   = true
+    rollback = true
+  }
 
   load_balancer {
     target_group_arn = var.alb_tg_arn

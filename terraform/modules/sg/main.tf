@@ -10,7 +10,7 @@ resource "aws_security_group" "alb_sg" {
 
 resource "aws_vpc_security_group_ingress_rule" "allow_http" {
   security_group_id = aws_security_group.alb_sg.id
-  description = "Allow HTTP traffic from anywhere"
+  description       = "Allow HTTP traffic from anywhere"
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 80
   ip_protocol       = "tcp"
@@ -19,7 +19,7 @@ resource "aws_vpc_security_group_ingress_rule" "allow_http" {
 
 resource "aws_vpc_security_group_ingress_rule" "allow_https" {
   security_group_id = aws_security_group.alb_sg.id
-  description = "Allow HTTPS traffic from anywhere"
+  description       = "Allow HTTPS traffic from anywhere"
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 443
   ip_protocol       = "tcp"
@@ -30,7 +30,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_traffic_ipv4" {
   security_group_id = aws_security_group.alb_sg.id
   description       = "Allow all outbound traffic"
   cidr_ipv4         = "0.0.0.0/0"
-  ip_protocol       = "-1" # semantically equivalent to all ports
+  ip_protocol       = "-1"
 }
 
 #Security Group for ECS Tasks
@@ -46,8 +46,8 @@ resource "aws_security_group" "ecs_sg" {
 
 resource "aws_vpc_security_group_ingress_rule" "allow_alb_to_ecs" {
   description                  = "Allow inbound traffic from ALB to ECS tasks"
-  from_port                    = 3000
-  to_port                      = 3000
+  from_port                    = var.container_port
+  to_port                      = var.container_port
   ip_protocol                  = "tcp"
   security_group_id            = aws_security_group.ecs_sg.id
   referenced_security_group_id = aws_security_group.alb_sg.id
