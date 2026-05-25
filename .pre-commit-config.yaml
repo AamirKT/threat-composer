@@ -6,5 +6,4 @@ repos:
     - id: terraform_validate
     - id: terraform_tflint
     - id: terraform_docs
-    - id: terraform_trivy
-    - id: terraform_checkov
+    
