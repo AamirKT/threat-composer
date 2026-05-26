@@ -57,9 +57,9 @@ jobs:
             role-session-name: terraform-plan
 
         - name: Setup TFLint
-          uses: terraform-linters/setup-tflint@v3
+          uses: terraform-linters/setup-tflint@v6
           with:
-            tflint_version: 0.34.1
+            tflint_version: v0.56.0
 
         - name: Init TFLint
           run: tflint --init
@@ -74,7 +74,7 @@ jobs:
               soft_fail: true
 
         - name: Setup Terraform
-          uses: hashicorp/setup-terraform@v3
+          uses: hashicorp/setup-terraform@v4
           with:
             terraform_version: 1.14.3
 
