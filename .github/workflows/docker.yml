@@ -4,7 +4,7 @@ on:
     branches:
       - main
     paths:
-        - 'app/Dockerfile'
+        - 'app/**'
 
   workflow_dispatch:
     
@@ -13,9 +13,14 @@ env:
     ECR_REGISTRY: ${{ vars.ECR_REGISTRY }}
     ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
 
+concurrency:
+    group: build-and-push-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     build-and-push:
         runs-on: ubuntu-latest
+
         permissions:
             contents: read
             id-token: write
@@ -60,18 +65,18 @@ jobs:
           with:
             image-ref: local-image:scan
             format: 'table'
-            exit-code: '1'
-            severity: 'CRITICAL'
+            exit-code: "1"
+            severity: CRITICAL
 
         - name: Tag and Push Docker image
           run: |
-            docker tag local-image:scan ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ steps.tag.outputs.IMAGE_TAG }}
-            docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ steps.tag.outputs.IMAGE_TAG }}
+            IMAGE_URI=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ steps.tag.outputs.IMAGE_TAG }}
+            docker tag local-image:scan "$IMAGE_URI"
+            docker push "$IMAGE_URI"
+            echo "$IMAGE_URI" > image-uri.txt
 
-
-
-
-
-
-
-
+        - name: Upload image URI as artifact
+          uses: actions/upload-artifact@v4
+          with:
+            name: image-uri
+            path: image-uri.txt
