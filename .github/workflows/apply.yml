@@ -68,8 +68,8 @@ jobs:
           with:
             url: https://${{ vars.DOMAIN_NAME }}/health
             follow-redirect: true
-            max-attempts: 10
-            retry-delay: 20
+            max-attempts: 20
+            retry-delay: 15s
         
         - name: Notify success
           if: success()
