@@ -14,3 +14,4 @@ RUN chown -R user:group /app
 USER user
 EXPOSE 3000
 CMD ["serve", "-s", "build"]
+
