@@ -5,16 +5,17 @@ on:
 
 env:
     AWS_REGION: eu-west-2
-    TF_VAR_container_image: ${{ vars.ECR_REGISTRY }}/${{ vars.ECR_REPOSITORY }}:${{ github.sha }}
     TF_VAR_route53_zone_id: ${{ vars.ROUTE53_ZONE_ID }}
     TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
+
+concurrency:
+    group: terraform-destroy
+    cancel-in-progress: false
    
 jobs:
     terraform-destroy:
         runs-on: ubuntu-latest
-        defaults:
-          run:
-            working-directory: terraform/
+
         permissions:
             contents: read
             id-token: write
@@ -31,14 +32,16 @@ jobs:
             role-session-name: terraform-destroy
 
         - name: Setup Terraform
-          uses: hashicorp/setup-terraform@v3
+          uses: hashicorp/setup-terraform@v4
           with:
             terraform_version: 1.14.3
             
         - name: Terraform Init
+          working-directory: terraform
           run: terraform init
 
         - name: Terraform destroy
+          working-directory: terraform
           run: terraform destroy -auto-approve
 
         - name: Notify success
