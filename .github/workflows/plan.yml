@@ -19,7 +19,7 @@ env:
 jobs:
     terraform-plan:
         runs-on: ubuntu-latest
-        if: ${{ github.event.workflow_run.conclusion == 'success' }}
+        if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
         permissions:
             contents: read
@@ -41,8 +41,13 @@ jobs:
             github-token: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Set image URI as environment variable
-          if: ${{ github.event_name == 'workflow_run' }}
-          run: echo "TF_VAR_container_image=$(cat image-uri.txt)" >> $GITHUB_ENV    
+          run: |
+            if [ "${{ github.event_name }}" == "workflow_run" ]; then 
+              echo "TF_VAR_container_image=$(cat image-uri.txt)" >> $GITHUB_ENV  
+              else
+              SHORT_SHA=${GITHUB_SHA::8}
+              echo "TF_VAR_container_image=${{ vars.ECR_REGISTRY }}/${{ vars.ECR_REPOSITORY }}:git-${SHORT_SHA}" >> $GITHUB_ENV  
+            fi
 
         - name: Configure AWS credentials via OIDC
           uses: aws-actions/configure-aws-credentials@v4
@@ -104,4 +109,3 @@ jobs:
         - name: Notify success
           if: success()
           run: echo Success! Your terraform plan has been created successfully!
-          
