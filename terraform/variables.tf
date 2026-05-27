@@ -34,6 +34,12 @@ variable "public_subnet_names" {
   default     = ["public-subnet-1", "public-subnet-2"]
 }
 
+variable "availability_mode" {
+  description = "The availability mode for the NAT Gateway"
+  type        = string
+  default     = "regional"
+}
+
 variable "private_subnet_names" {
   description = "Names for private subnets"
   type        = list(string)

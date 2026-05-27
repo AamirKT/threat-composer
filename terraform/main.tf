@@ -4,6 +4,7 @@ module "vpc" {
   vpc_name             = var.vpc_name
   aws_region           = var.aws_region
   availability_zones   = var.availability_zones
+  availability_mode    = var.availability_mode
   public_subnet_cidrs  = var.public_subnet_cidrs
   public_subnet_names  = var.public_subnet_names
   private_subnet_cidrs = var.private_subnet_cidrs

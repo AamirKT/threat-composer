@@ -18,6 +18,11 @@ variable "availability_zones" {
   type        = list(string)
 }
 
+variable "availability_mode" {
+  description = "The availability mode for the NAT Gateway"
+  type        = string
+}
+
 variable "public_subnet_cidrs" {
   description = "CIDR blocks for public subnets"
   type        = list(string)
