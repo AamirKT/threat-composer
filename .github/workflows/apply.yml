@@ -64,7 +64,7 @@ jobs:
           run: terraform apply -input=false -auto-approve tfplan
 
         - name: Post-deploy health check
-          uses: jtalk/url-health-check-action@v1
+          uses: jtalk/url-health-check-action@v4
           with:
             url: https://${{ vars.DOMAIN_NAME }}/health
             follow-redirect: true
@@ -73,4 +73,4 @@ jobs:
         
         - name: Notify success
           if: success()
-          run: echo Success! Your infastructure has been applied successfully!
+          run: echo Success! Your infrastructure has been applied successfully!
