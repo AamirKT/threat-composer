@@ -62,6 +62,7 @@ resource "aws_eip" "nat_eip" {
 }
 
 resource "aws_nat_gateway" "nat_gw" {
+  vpc_id            = aws_vpc.threatcomposer_vpc.id
   availability_mode = var.availability_mode
   tags = {
     Name = "${var.vpc_name}-nat-gw"
