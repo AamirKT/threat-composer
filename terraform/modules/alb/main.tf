@@ -22,7 +22,7 @@ resource "aws_lb_target_group" "threatcomposer_alb_tg" {
   vpc_id      = var.vpc_id
 
   health_check {
-    path                = "/health"
+    path                = "/health.json"
     protocol            = "HTTP"
     matcher             = "200"
     interval            = "30"
