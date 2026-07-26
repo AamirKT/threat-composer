@@ -12,6 +12,7 @@ concurrency:
 
 env:
     AWS_REGION: eu-west-2
+    SKIP_APPLY: "false"
    
 jobs:
     terraform-apply:
@@ -29,21 +30,33 @@ jobs:
           with:
             ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
-        - name: Download Terraform plan artifact
-          if: ${{ github.event_name == 'workflow_run' }}
-          uses: actions/download-artifact@v4
-          with:
-            name: terraform-plan
-            run-id: ${{ github.event.workflow_run.id }}
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-
-        - name: Show image being deployed
+        - name: Check if plan artifact exists and download it
+          id: check-artifact
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           run: |
-            if [ -f image-uri.txt ]; then 
-              echo "Deploying image: $(cat image-uri.txt)"   
+            if ! gh run download ${{ github.event.workflow_run.id }} --name terraform-plan --dir . --repo ${{ github.repository }}; then
+              echo "Plan artifact not found. Skipping apply."
+              echo "SKIP_APPLY=true" >> "$GITHUB_ENV"
             fi
 
+        - name: Show image being deployed
+          if: ${{ env.SKIP_APPLY != 'true' }}
+          run: |
+            if [ -f image-uri.txt ]; then 
+              echo "Deploying image: $(cat image-uri.txt)"  
+            else 
+              echo "image-uri.txt not found. Skipping apply."
+              echo "SKIP_APPLY=true" >> "$GITHUB_ENV" 
+            fi
+
+        - name: Read image URI
+          if: ${{ env.SKIP_APPLY != 'true' }}
+          id: image
+          run: echo "uri=$(cat image-uri.txt)" >> $GITHUB_OUTPUT
+
         - name: Configure AWS credentials via OIDC
+          if: ${{ env.SKIP_APPLY != 'true' }}
           uses: aws-actions/configure-aws-credentials@v4
           with:
             role-to-assume: ${{ secrets.AWS_ROLE_TERRAFORM_APPLY }}
@@ -51,19 +64,49 @@ jobs:
             role-session-name: terraform-apply
 
         - name: Setup Terraform
+          if: ${{ env.SKIP_APPLY != 'true' }}
           uses: hashicorp/setup-terraform@v3
           with:
             terraform_version: 1.14.3
             
         - name: Terraform Init
+          if: ${{ env.SKIP_APPLY != 'true' }}
           working-directory: terraform
           run: terraform init
 
         - name: Terraform apply
+          if: ${{ env.SKIP_APPLY != 'true' }}
           working-directory: terraform
           run: terraform apply -input=false -auto-approve tfplan
 
+        - name: Fetch current task definition
+          if: ${{ env.SKIP_APPLY != 'true' }}
+          run: |
+            aws ecs describe-task-definition \
+              --task-definition ${{ vars.ECS_FAMILY_NAME }} \
+              --query 'taskDefinition' \
+              --output json > terraform/task-definition.json
+
+        - name: Fill in new image ID in task definition
+          if: ${{ env.SKIP_APPLY != 'true' }}
+          id: render-task-definition
+          uses: aws-actions/amazon-ecs-render-task-definition@v1
+          with:
+            task-definition: terraform/task-definition.json
+            container-name: ${{ vars.ECS_CONTAINER_NAME }}
+            image: ${{ steps.image.outputs.uri }}
+
+        - name: Deploy ECS service
+          if: ${{ env.SKIP_APPLY != 'true' }}
+          uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+          with:
+            task-definition: ${{ steps.render-task-definition.outputs.task-definition }}
+            service: ${{ vars.ECS_SERVICE_NAME }}
+            cluster: ${{ vars.ECS_CLUSTER_NAME }}
+            wait-for-service-stability: true  
+
         - name: Post-deploy health check
+          if: ${{ env.SKIP_APPLY != 'true' }}
           uses: jtalk/url-health-check-action@v4
           with:
             url: https://${{ vars.DOMAIN_NAME }}/health.json
@@ -73,4 +116,9 @@ jobs:
         
         - name: Notify success
           if: success()
-          run: echo Success! Your infrastructure has been applied successfully!
+          run: |
+            if [ "${{ env.SKIP_APPLY }}" == "true" ]; then
+              echo "No changes detected. Terraform apply completed successfully."
+            else
+              echo "Success! Infrastructure applied and ECS service updated successfully."
+            fi
