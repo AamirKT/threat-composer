@@ -60,8 +60,3 @@ module "ecs" {
   policy_arn                         = var.policy_arn
   launch_type                        = var.launch_type
 }
-
-module "ecr" {
-  source          = "./modules/ecr"
-  repository_name = "threat-composer-repository"
-}

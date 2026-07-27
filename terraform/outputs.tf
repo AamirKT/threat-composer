@@ -22,8 +22,3 @@ output "ecs_security_group_id" {
   description = "The security group ID of the ECS tasks"
   value       = module.sg.ecs_security_group_id
 }
-
-output "ecr_repository_url" {
-  description = "The URL of the ECR repository"
-  value       = module.ecr.ecr_repository_url
-}
