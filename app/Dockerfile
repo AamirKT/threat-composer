@@ -14,4 +14,4 @@ RUN addgroup -S group && adduser -S user -G group
 RUN chown -R user:group /app
 USER user
 EXPOSE 3000
-CMD ["serve", "-s", "build"]
+CMD ["node_modules/.bin/serve", "-s", "build"]
