@@ -8,7 +8,7 @@ RUN yarn build
 FROM node:24-alpine@sha256:fb71d01345f11b708a3553c66e7c74074f2d506400ea81973343d915cb64eef0
 WORKDIR /app
 COPY --from=build /app/build ./build
-RUN yarn global add serve
+RUN yarn global add serve tar@7.5.19
 RUN addgroup -S group && adduser -S user -G group
 RUN chown -R user:group /app
 USER user
