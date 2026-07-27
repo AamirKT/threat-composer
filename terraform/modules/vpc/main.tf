@@ -54,13 +54,6 @@ resource "aws_route_table_association" "public_rt_assoc" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-resource "aws_eip" "nat_eip" {
-  domain = "vpc"
-  tags = {
-    Name = "${var.vpc_name}-nat-eip"
-  }
-}
-
 resource "aws_nat_gateway" "nat_gw" {
   vpc_id            = aws_vpc.threatcomposer_vpc.id
   availability_mode = var.availability_mode
@@ -68,6 +61,25 @@ resource "aws_nat_gateway" "nat_gw" {
     Name = "${var.vpc_name}-nat-gw"
   }
   depends_on = [aws_internet_gateway.igw]
+
+
+  availability_zone_address {
+    allocation_ids    = aws_eip.nat[0].id
+    availability_zone = var.availability_zones[0]
+  }
+
+  availability_zone_address {
+    allocation_ids    = aws_eip.nat[1].id
+    availability_zone = var.availability_zones[1]
+  }
+}
+
+resource "aws_eip" "nat" {
+  count  = 2
+  domain = "vpc"
+  tags = {
+    Name = "${var.vpc_name}-nat-eip-${count.index + 1}"
+  }
 }
 
 resource "aws_route_table" "private_rt" {
