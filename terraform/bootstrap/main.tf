@@ -70,12 +70,12 @@ resource "aws_ecr_lifecycle_policy" "threatcomposer_ecr_lifecycle_policy" {
       {
         rulePriority = 1
         description  = "Expire untagged images after 30 days"
-        selection    = {
+        selection = {
           tagStatus   = "untagged"
           countType   = "imageCountMoreThan"
           countNumber = 10
         }
-        action       = {
+        action = {
           type = "expire"
         }
       }
