@@ -1,4 +1,4 @@
-FROM node:24-latest
+FROM node:24
 WORKDIR /app
 COPY . .
 RUN yarn install
