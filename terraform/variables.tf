@@ -65,13 +65,12 @@ variable "container_name" {
 variable "container_image" {
   description = "The container image to use for the ECS task"
   type        = string
-  default     = "657672948849.dkr.ecr.eu-west-2.amazonaws.com/threat-composer-repository:git-8c9d1c18"
 }
 
 variable "container_port" {
-  description = "The port on which the ECS container will listen (e.g., 3000)"
+  description = "The port on which the ECS container will listen"
   type        = number
-  default     = 3000
+  default     = 80
 }
 
 variable "domain_name" {

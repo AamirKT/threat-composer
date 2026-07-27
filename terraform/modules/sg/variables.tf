@@ -9,6 +9,6 @@ variable "alb_name" {
 }
 
 variable "container_port" {
-  description = "The port on which the ECS container will listen (e.g., 3000)"
+  description = "The port on which the ECS container will listen"
   type        = number
 }

@@ -22,3 +22,8 @@ variable "alb_security_group_id" {
   description = "The ID of the security group to associate with the ALB"
   type        = string
 }
+
+variable "container_port" {
+  description = "The port on which the ECS container will listen"
+  type        = number
+}

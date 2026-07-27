@@ -25,6 +25,7 @@ module "alb" {
   certificate_arn       = module.acm.certificate_arn
   alb_security_group_id = module.sg.alb_security_group_id
   alb_name              = var.alb_name
+  container_port        = var.container_port
 }
 
 module "acm" {
