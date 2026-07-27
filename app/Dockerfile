@@ -1,10 +1,11 @@
-FROM node:24-alpine
+FROM node:24-latest
 WORKDIR /app
 COPY . .
 RUN yarn install
 RUN yarn build
+RUN npm install -g serve
 EXPOSE 80
-CMD ["yarn", "start"]
+CMD ["serve", "-s", "build", "-l", "80"]
 
 # FROM node:24-alpine@sha256:fb71d01345f11b708a3553c66e7c74074f2d506400ea81973343d915cb64eef0 AS build
 # WORKDIR /app
