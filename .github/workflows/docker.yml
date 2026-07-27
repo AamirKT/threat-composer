@@ -56,8 +56,7 @@ jobs:
             load: true
             push: false
             tags: local-image:scan
-            cache-from: type=gha
-            cache-to: type=gha,mode=max
+            no-cache: true
             platforms: linux/amd64
 
         - name: Scan image for vulnerabilities
