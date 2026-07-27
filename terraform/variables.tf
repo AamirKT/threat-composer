@@ -65,6 +65,7 @@ variable "container_name" {
 variable "container_image" {
   description = "The container image to use for the ECS task"
   type        = string
+  default     = ""
 }
 
 variable "container_port" {
