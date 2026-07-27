@@ -34,7 +34,7 @@
     "jest": "*",
     "jest-junit": "^13",
     "merge": "*",
-    "npm-check-updates": "^16.14.15",
+    "npm-check-updates": "^22.2.9",
     "prettier": "^3.7.4",
     "prop-types": "^15.8.1",
     "react": "18.2.0",
